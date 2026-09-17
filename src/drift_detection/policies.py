@@ -7,12 +7,14 @@ from .models import make_model, predict, error_metrics
 
 
 def simulate_policy(train, monitoring, initial_model, leaves, cuts, policy,
-                    retrain_every=4, cooldown_weeks=4, history_days=180):
+                    retrain_every=4, cooldown_weeks=4, history_days=180, available_history=None):
     if policy not in {'frozen', 'scheduled', 'error_triggered'}:
         raise ValueError(f'Unknown policy: {policy}')
     model = clone(initial_model)
     model.fit(train[FEATURES], train[TARGET])
-    history = train.copy()
+    history = train.copy() if available_history is None else available_history.copy()
+    if not monitoring.empty and history.timestamp.max() >= monitoring.timestamp.min():
+        raise ValueError("Initial history overlaps the monitoring period")
     rows, observations = [], []
     streak, last_fit, previous = 0, -cooldown_weeks, None
     batches = list(complete_weeks(monitoring))
@@ -45,10 +47,10 @@ def simulate_policy(train, monitoring, initial_model, leaves, cuts, policy,
     return pd.DataFrame(rows), pd.concat(observations, ignore_index=True)
 
 
-def compare_policies(train, monitoring, initial_model, leaves, cuts):
+def compare_policies(train, monitoring, initial_model, leaves, cuts, available_history=None):
     reports, observations, summary = [], [], []
     for policy in ('frozen', 'scheduled', 'error_triggered'):
-        report, obs = simulate_policy(train, monitoring, initial_model, leaves, cuts, policy)
+        report, obs = simulate_policy(train, monitoring, initial_model, leaves, cuts, policy, available_history=available_history)
         reports.append(report); observations.append(obs)
         summary.append({'policy': policy, **error_metrics(obs.actual, obs.prediction),
                         'update_fits': int(report.retrained_after_batch.sum()),

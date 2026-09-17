@@ -54,7 +54,8 @@ def evaluate_controlled(reference, calibration, model, cuts, seeds=range(20), we
                 after = np.flatnonzero(flags[onset:])
                 rows.append({'scenario': scenario, 'seed': seed, 'detector': detector,
                              'prechange_alert_fraction': before.mean(),
-                             'detected_after_onset': bool(after.size),
+                             'runs_with_postonset_alert': bool(after.size),
+                             'postonset_alert_fraction': flags[onset:].mean(),
                              'delay_batches': float(after[0]) if after.size else np.nan,
                              'all_alert_fraction': flags.mean()})
     return pd.DataFrame(rows), traces
@@ -63,7 +64,8 @@ def evaluate_controlled(reference, calibration, model, cuts, seeds=range(20), we
 def summarize_experiments(results):
     return results.groupby(['scenario', 'detector'], as_index=False).agg(
         prechange_alert_fraction=('prechange_alert_fraction', 'mean'),
-        detected_fraction=('detected_after_onset', 'mean'),
+        runs_with_postonset_alert=('runs_with_postonset_alert', 'mean'),
+        postonset_alert_fraction=('postonset_alert_fraction', 'mean'),
         median_delay_batches=('delay_batches', 'median'),
         all_alert_fraction=('all_alert_fraction', 'mean'),
     )

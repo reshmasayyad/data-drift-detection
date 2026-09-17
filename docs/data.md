@@ -8,4 +8,4 @@ Target: total hourly rentals (`cnt`). Predictors: observed weather, hour and cal
 
 `casual` and `registered` sum exactly to the target and are excluded. `instant` and `yr` are excluded. There are no missing values in the selected columns; absent hourly records are not filled with zeros.
 
-Chronology: January–September 2011 training; October 2011 model selection; November–December 2011 threshold calibration; 2012 monitoring. Only batches with at least 140 observations enter the weekly experiment. Boundary/sparse-week exclusions are counted in the notebook.
+Chronology: January–September 2011 training; October 2011 model selection; November–December 2011 threshold calibration; 2012 monitoring. Only Monday–Sunday weeks contained within each partition’s date span, with at least 100 observed hours, enter the weekly experiment. Boundary/sparse-week exclusions are counted in the notebook. In particular, the short 29 October 2012 week remains eligible; lower coverage is shown alongside its error rather than imputed as zero demand.

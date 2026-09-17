@@ -29,10 +29,16 @@ def weekly_report(reference, stream, model):
     return pd.DataFrame(records), pd.concat(features, ignore_index=True)
 
 
-def calibrate(reference, calibration, model, quantile=0.95):
+def calibrate(reference, calibration, model, quantile=0.95, bootstrap_weeks=200):
     report, _ = weekly_report(reference, calibration, model)
-    cuts = Thresholds(float(np.quantile(report.drift_score, quantile, method='higher')),
-                      float(np.quantile(report.mae, quantile, method='higher')), quantile)
+    # Null resampling uses calibration days only, with seeds disjoint from evaluation.
+    # This yields an empirical seasonal baseline, not a guaranteed false-alarm rate.
+    from .experiments import controlled_stream
+    null = controlled_stream(calibration, seed=9001, scenario='no_change', weeks=bootstrap_weeks)
+    null_report, _ = weekly_report(reference, null, model)
+    cuts = Thresholds(float(np.quantile(null_report.drift_score, quantile, method='higher')),
+                      float(np.quantile(null_report.mae, quantile, method='higher')), quantile)
+    report.attrs['bootstrap_weeks'] = bootstrap_weeks
     return cuts, report
 
 

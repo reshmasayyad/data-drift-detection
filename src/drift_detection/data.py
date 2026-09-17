@@ -33,9 +33,11 @@ def partition(frame: pd.DataFrame) -> dict[str, pd.DataFrame]:
     }
 
 
-def complete_weeks(frame: pd.DataFrame, minimum_hours: int = 140):
-    """Monday-start calendar weeks; omit sparse/boundary weeks explicitly."""
+def complete_weeks(frame: pd.DataFrame, minimum_hours: int = 100):
+    """Monday-start weeks inside the observed date span, with coverage checks."""
     keys = frame.timestamp.dt.to_period('W-SUN').dt.start_time
     for start, batch in frame.groupby(keys, sort=True):
-        if len(batch) >= minimum_hours:
+        contained = (start >= frame.timestamp.min().normalize() and
+                     start + pd.Timedelta(days=6) <= frame.timestamp.max().normalize())
+        if contained and len(batch) >= minimum_hours:
             yield pd.Timestamp(start), batch.copy()
