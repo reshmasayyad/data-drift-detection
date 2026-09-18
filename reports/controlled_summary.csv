@@ -1,0 +1,7 @@
+scenario,detector,prechange_alert_fraction,runs_with_postonset_alert,postonset_alert_fraction,median_delay_batches,all_alert_fraction
+demand_growth,covariate_alert,0.075,0.6,0.05500000000000001,5.0,0.065
+demand_growth,performance_alert,0.0075000000000000015,1.0,0.9574999999999999,1.0,0.48250000000000004
+no_change,covariate_alert,0.075,0.6,0.05500000000000001,5.0,0.065
+no_change,performance_alert,0.0075000000000000015,0.05,0.0025,2.0,0.005
+sensor_bias,covariate_alert,0.075,1.0,1.0,0.0,0.5375
+sensor_bias,performance_alert,0.0075000000000000015,1.0,0.6425,1.0,0.325

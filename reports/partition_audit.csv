@@ -1,0 +1,5 @@
+partition,rows,first,last,eligible_weeks,eligible_hours,excluded_hours
+train,6442,2011-01-01,2011-09-30 23:00:00,38,6275,167
+selection,743,2011-10-01,2011-10-31 23:00:00,4,671,72
+calibration,1460,2011-11-01,2011-12-31 23:00:00,7,1174,286
+monitoring,8734,2012-01-01,2012-12-31 23:00:00,52,8686,48
